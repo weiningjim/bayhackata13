@@ -1,3 +1,5 @@
+import Test.QuickCheck
+  
 bowling :: [Int] -> Int
 bowling = sum . concat . (take 10) . frames
 
@@ -24,3 +26,8 @@ main = do
                [10,3]]
       ans = map bowling tests
   print ans
+
+perfect y = 
+  not (null y) ==>
+  (maximum y <= 10) ==>
+  bowling y <= 300
