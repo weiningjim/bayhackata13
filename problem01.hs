@@ -1,7 +1,23 @@
 import Test.QuickCheck
-  
+
+-- problem 1: calculate total score from a list
 bowling :: [Int] -> Int
 bowling = sum . concat . (take 10) . frames
+
+-- problem 2: display scores
+scoreStr :: [Int] -> String
+scoreStr = concatMap frame2str . frames where
+  showNum 0 = "-"
+  showNum x = show x
+  frame2str (10:_) = "X "
+  frame2str [x] = showNum x ++ " "
+  frame2str (x:y:_)
+    | x + y == 10 = showNum x ++ "/"
+    | otherwise = showNum x ++ showNum y
+
+
+-- totalStr :: [Int] -> String
+
 
 frames :: [Int] -> [[Int]]
 frames [] = []
@@ -26,8 +42,10 @@ main = do
                [10,3]]
       ans = map bowling tests
   print ans
+  print $ map scoreStr tests
 
-perfect y = 
+
+perfect y =
   not (null y) ==>
   (maximum y <= 10) ==>
   bowling y <= 300
