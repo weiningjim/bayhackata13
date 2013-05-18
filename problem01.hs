@@ -1,8 +1,5 @@
 import Test.QuickCheck
-
--- problem 1: calculate total score from a list
-bowling :: [Int] -> Int
-bowling = sum . concat . (take 10) . frames
+import Data.List
 
 -- problem 2: display scores
 scoreStr :: [Int] -> String
@@ -25,22 +22,35 @@ lastFrame [x] = showNum x ++ "  "
 lastFrame [x,y] = concatMap showNum [x,y] ++ " "
 lastFrame [x,y,z] = concatMap showNum [x,y,z]
     
+totalStr :: [Int] -> [Int]
+totalStr xs =
+  let ys = take 10 $ frames xs
+      
+      showable [_] = False
+      showable [10,_] = False
+      showable (10:_) = True
+      showable [x,y] = x+y < 10
+      showable _ = True
+      
+      indv = map sum $ takeWhile showable ys
+      
+  in map sum $ tail $ inits indv
 
 
-
--- totalStr :: [Int] -> String
-
+-- problem 1: calculate total score from a list
+bowling :: [Int] -> Int
+bowling = sum . concat . (take 10) . frames
 
 frames :: [Int] -> [[Int]]
 frames [] = []
 frames [x] = [[x]]
 frames [x, y]
-  | x == 10 = [[x,y], [y]]
+  | x == 10   = [[x,y], [y]]
   | otherwise = [[x,y]]
 frames (x1:x2:x3:xs)
-  | x1 == 10 = [x1,x2,x3] : frames (x2:x3:xs)
-  | x1 + x2 == 10 = [x1,x2,x3] : frames (x3:xs)
-  | otherwise = [x1,x2] : frames (x3:xs)
+  | x1 == 10      = [x1,x2,x3] : frames (x2:x3:xs)
+  | x1 + x2 == 10 = [x1,x2,x3] : frames    (x3:xs)
+  | otherwise     = [x1,x2]    : frames    (x3:xs)
 
 tests = [[],
                [1,2,3,4],
@@ -61,3 +71,8 @@ main = do
 perfect y ys = 
   ((maximum (y:ys)) <= 10) ==>
   bowling (y:ys) <= 30*(1 + length ys)
+
+{-
+perfecter xs =
+  bowling (map (`mod`10) $ map abs xs) <= 30*length
+-}
